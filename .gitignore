@@ -3,3 +3,6 @@ cred.json
 .idea/*
 __pycache__/*
 *.json
+build/
+dist/
+*.spec
