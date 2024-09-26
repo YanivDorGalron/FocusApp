@@ -33,6 +33,20 @@ class FocusApp(ctk.CTk):
         self.load_stats()
         self.create_widgets()
         self.after(1000, self.update_timers)
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def on_close(self):
+        if self.is_focus_running:
+            if messagebox.askyesno("Quit", "Do you really want to quit?"):
+                destroy = True
+                self.save_stats()  # Save stats before closing
+        else:
+            destroy = True
+        
+        if destroy:
+            self.quit()
+            self.destroy()
+
 
     def create_widgets(self):
         self.grid_columnconfigure(0, weight=1)
