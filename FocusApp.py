@@ -157,6 +157,7 @@ class FocusApp(ctk.CTk):
                     return
                 self.elapsed_time = 0
                 self.is_paused = False
+                self.task_label.configure(text=f"Current Task: {self.task}")
                 self.pause_button.configure(state="normal")
                 self.stop_button.configure(state="normal")
                 self.start_time = datetime.datetime.utcnow()
