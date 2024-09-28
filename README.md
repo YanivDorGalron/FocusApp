@@ -12,8 +12,11 @@
 - **Sound Notifications**: Optionally enable sound notifications for session milestones.
 - **Google Calendar Integration**: Will record past focus session on your google calendar. CC friends is possible.
 
-![image](https://github.com/user-attachments/assets/06625bdc-6aea-4e7e-a0f3-9c55732f8ff8)
-![image](https://github.com/user-attachments/assets/27559d58-6a31-49c0-9074-ad8e2ad6d422)
+
+<div style="display: flex; justify-content: space-between;">
+    <img src="https://github.com/user-attachments/assets/06625bdc-6aea-4e7e-a0f3-9c55732f8ff8" alt="Image 1" style="height: 300px; object-fit: cover;"/>
+    <img src="https://github.com/user-attachments/assets/27559d58-6a31-49c0-9074-ad8e2ad6d422" alt="Image 2" style="height: 300px; object-fit: cover;"/>
+</div>
 
 ## Pyinstaller
 
