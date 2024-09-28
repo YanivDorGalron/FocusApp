@@ -13,15 +13,16 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
 def authenticate_google_calendar():
     creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file(get_resource_path('token.json'), SCOPES)
+    token_path = os.path.join(os.path.expanduser('~'), 'focus_app_token.json')  # Store in home directory
+    if os.path.exists(token_path):
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(get_resource_path('cred.json'), SCOPES)
             creds = flow.run_local_server(port=0)
-        with open(get_resource_path('token.json'), 'w') as token:
+        with open(token_path, 'w') as token:  # Use updated token path
             token.write(creds.to_json())
     return build('calendar', 'v3', credentials=creds)
 

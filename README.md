@@ -26,7 +26,7 @@ To create an executable file using PyInstaller, follow these steps:
 
 2. Command to create executable:
     ```
-     pyinstaller --add-data "sounds;sounds" FocusApp.py --name FocusApp --noconsole --add-data "cred.json;. --onefile" 
+     pyinstaller --add-data "sounds;sounds" FocusApp.py --name FocusApp --noconsole --add-data "cred.json;." --onefile" 
     ```
 
 3. The executable file will be generated in the `dist` folder.
