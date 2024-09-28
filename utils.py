@@ -13,7 +13,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
 def authenticate_google_calendar():
     creds = None
-    token_path = get_resource_path('token.json')
+    token_path = os.path.join(os.path.expanduser('~'), 'focus_app_token.json')  # Store in home directory
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
     if not creds or not creds.valid:
