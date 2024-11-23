@@ -18,6 +18,11 @@
     <img src="https://github.com/user-attachments/assets/27559d58-6a31-49c0-9074-ad8e2ad6d422" alt="Image 2" style="height: 300px; object-fit: cover;"/>
 </div>
 
+## Note
+
+- If one wishes only to enjoy the features of this app - he can download the exe file in the dist folder.
+- If you wish to expand upon this app and add more features - modify this code as wanted and follow the below instruction to export it the a new exe file. you will also need to create your own cred.json google app details
+
 ## Pyinstaller
 
 To create an executable file using PyInstaller, follow these steps:
