@@ -20,9 +20,8 @@
 
 ## Note
 
-- If one wishes only to enjoy the features of this app - he can download the exe file in the dist folder.
-- If you wish to expand upon this app and add more features - modify this code as wanted and follow the below instruction to export it the a new exe file. you will also need to create your own cred.json google app details
-
+- To simply enjoy the features of this app, download the ```.exe``` file available in the dist folder.
+- If you'd like to enhance this app by adding new features, feel free to modify the code as needed. Follow the instructions below to export it as a new ```.exe``` file. Additionally, you'll need to create your own ```cred.json``` file with your Google app details.
 ## Pyinstaller
 
 To create an executable file using PyInstaller, follow these steps:
