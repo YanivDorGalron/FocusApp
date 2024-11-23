@@ -1,4 +1,3 @@
-*.mp3
 cred.json
 .idea/*
 __pycache__/*
