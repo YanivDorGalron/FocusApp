@@ -2,6 +2,10 @@
 
 **FocusApp** is a productivity tool designed to help you track and manage your focus sessions. It provides a visual timer, task management, and statistics tracking, along with a productivity graph that shows your focus time over the past week.
 
+
+https://github.com/user-attachments/assets/c5ee5a58-276c-4c28-a24e-7ca88f26b81a
+
+
 ## Features
 
 - **Focus Timer**: Start, pause, and stop focus sessions with customizable durations.
