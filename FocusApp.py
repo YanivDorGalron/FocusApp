@@ -1,6 +1,7 @@
 import datetime
 import json
 import threading
+
 import tkinter as tk
 from tkinter import messagebox
 import customtkinter as ctk
@@ -9,7 +10,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from playsound import playsound
 
 from utils import add_focus_session_to_calendar, get_resource_path
-
+from consts import COLORS
 
 class FocusApp(ctk.CTk):
     def __init__(self):
@@ -62,12 +63,12 @@ class FocusApp(ctk.CTk):
         timer_frame.grid_columnconfigure(0, weight=1)
 
         self.focus_timer_label = ctk.CTkLabel(timer_frame, text="00:00",
-                                              font=ctk.CTkFont(size=60, weight="bold"),
+                                              font=ctk.CTkFont(size=40, weight="bold"),
                                               text_color="#4CAF50")
         self.focus_timer_label.grid(row=0, column=0, pady=(20, 10))
 
         self.break_timer_label = ctk.CTkLabel(timer_frame, text="00:00",
-                                              font=ctk.CTkFont(size=60, weight="bold"),
+                                              font=ctk.CTkFont(size=40, weight="bold"),
                                               text_color="#4CAF50")
         self.break_timer_label.grid(row=0, column=0, pady=(20, 10))
 
@@ -147,6 +148,27 @@ class FocusApp(ctk.CTk):
 
         self.update_productivity_graph()
 
+        # Dropdown label
+        label = ctk.CTkLabel(input_frame, text="Color:", font=("Arial", 14))
+        label.grid(row=3, column=0, padx=(10, 5), pady=5, sticky="w")
+
+        # Dropdown menu for selecting colors
+        self.color_var = ctk.StringVar(value="1: Light Blue")  # Default selection
+        self.selected_color_id = 1
+        color_info = COLORS[self.selected_color_id]
+
+        self.color_dropdown = ctk.CTkOptionMenu(
+            input_frame,
+            variable=self.color_var,
+            values=[f"{color_id}: {color_info['name']}" for color_id, color_info in COLORS.items()],
+            command=self.on_color_select,  # Called when a selection is made
+            fg_color=color_info["background"],
+            text_color="#000000",  # Set the text color to black
+            button_color = color_info["background"],
+        )
+
+        self.color_dropdown.grid(row=3, column=1, pady=(0, 10), sticky="ew")
+
     def start_focus_session(self):
         if not self.is_focus_running:
             try:
@@ -203,7 +225,7 @@ class FocusApp(ctk.CTk):
         if self.start_time:
             elapsed_minutes = self.elapsed_time // 60
             cc_email = self.cc_email_entry.get()
-            add_focus_session_to_calendar(self.start_time, elapsed_minutes, self.task, cc_email if cc_email else None)
+            add_focus_session_to_calendar(self.start_time, elapsed_minutes, self.task, cc_email if cc_email else None, self.selected_color_id)
 
     def run_timer(self):
         self.start_time = datetime.datetime.utcnow()
@@ -330,6 +352,13 @@ class FocusApp(ctk.CTk):
         self.ax.set_yticks([i for i in range(0, int(max_time)+1)])  # Set y-ticks to be every hour
         self.fig.tight_layout()
         self.canvas.draw()
+
+    def on_color_select(self, event):
+        """Update the preview label with the selected color."""
+        self.selected_color_id = int(self.color_var.get().split(':')[0])
+        color_info = COLORS[self.selected_color_id]
+        self.color_dropdown.configure(fg_color=color_info["background"],
+                                      button_color = color_info["background"],)  # Update background color
 
 if __name__ == "__main__":
     app = FocusApp()
