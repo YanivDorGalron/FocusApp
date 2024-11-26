@@ -27,7 +27,7 @@ def authenticate_google_calendar():
     return build('calendar', 'v3', credentials=creds)
 
 
-def add_focus_session_to_calendar(start_time, focus_duration, task, cc_email=None):
+def add_focus_session_to_calendar(start_time, focus_duration, task, cc_email=None,color_id=1):
     service = authenticate_google_calendar()
     event = {
         'summary': f'Focus Session: {task}',
@@ -39,10 +39,12 @@ def add_focus_session_to_calendar(start_time, focus_duration, task, cc_email=Non
         'end': {
             'dateTime': (start_time + datetime.timedelta(minutes=focus_duration)).isoformat() + 'Z',
             'timeZone': 'UTC',
-        }
+        },
+        'colorId': color_id,
     }
     if cc_email:
         event['attendees'] = [{'email': cc_email}]
+
     service.events().insert(calendarId='primary', body=event).execute()
 
 
