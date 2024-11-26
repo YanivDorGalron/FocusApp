@@ -149,11 +149,11 @@ class FocusApp(ctk.CTk):
         self.reset_stats_button.grid(row=0, column=0, padx=5)
 
         self.freq_sound_var = tk.BooleanVar(value=True)
-        self.freq_sound_toggle = ctk.CTkSwitch(options_frame, text="Enable frequant Sounds", variable=self.freq_sound_var)
+        self.freq_sound_toggle = ctk.CTkSwitch(options_frame, text="Enable Frequent Sounds", variable=self.freq_sound_var)
         self.freq_sound_toggle.grid(row=0, column=2, padx=5)
         
         self.sound_var = tk.BooleanVar(value=True)
-        self.sound_toggle = ctk.CTkSwitch(options_frame, text="Enable frequant Sounds", variable=self.sound_var)
+        self.sound_toggle = ctk.CTkSwitch(options_frame, text="Enable Sounds", variable=self.sound_var)
         self.sound_toggle.grid(row=0, column=1, padx=5)
 
         # Productivity Graph
