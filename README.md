@@ -2,6 +2,10 @@
 
 **FocusApp** is a productivity tool designed to help you track and manage your focus sessions. It provides a visual timer, task management, and statistics tracking, along with a productivity graph that shows your focus time over the past week.
 
+
+https://github.com/user-attachments/assets/c5ee5a58-276c-4c28-a24e-7ca88f26b81a
+
+
 ## Features
 
 - **Focus Timer**: Start, pause, and stop focus sessions with customizable durations.
@@ -20,9 +24,8 @@
 
 ## Note
 
-- If one wishes only to enjoy the features of this app - he can download the exe file in the dist folder.
-- If you wish to expand upon this app and add more features - modify this code as wanted and follow the below instruction to export it the a new exe file. you will also need to create your own cred.json google app details
-
+- To simply enjoy the features of this app, download the ```.exe``` file available in the dist folder.
+- If you'd like to enhance this app by adding new features, feel free to modify the code as needed. Follow the instructions below to export it as a new ```.exe``` file. Additionally, you'll need to create your own ```cred.json``` file with your Google app details.
 ## Pyinstaller
 
 To create an executable file using PyInstaller, follow these steps:
