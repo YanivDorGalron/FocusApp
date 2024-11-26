@@ -180,13 +180,13 @@ class FocusApp(ctk.CTk):
             command=self.on_color_select,  # Called when a selection is made
             fg_color=color_info["background"],
             text_color="#000000",  # Set the text color to black
-            button_color = color_info["background"],
+            button_color=color_info["background"],
         )
 
         self.color_dropdown.grid(row=3, column=1, pady=(0, 10), sticky="ew")
         
-    def add_5_minutes(self):
-        if self.focus_duration == 0:
+    def add_5_minutes(self, force=False):
+        if self.focus_duration == 0 and not force:
             messagebox.showwarning("Warning", "Please Start a session first.")
         else:
             self.focus_duration += 5
@@ -260,6 +260,13 @@ class FocusApp(ctk.CTk):
             cc_email = self.cc_email_entry.get()
             add_focus_session_to_calendar(self.start_time, elapsed_minutes, self.task, cc_email if cc_email else None, self.selected_color_id)
 
+    def focus_session_complete(self):
+        # Ask the user whether to add 5 more minutes
+        add_more_time = messagebox.askyesno("Add More Time", "Focus Session Complete! Would you like to add 5 more minutes?")
+        if add_more_time:
+            self.add_5_minutes(force=True)
+        return add_more_time
+
     def run_timer(self):
         self.start_time = datetime.datetime.utcnow()
         self.last_notification = 0
@@ -274,16 +281,19 @@ class FocusApp(ctk.CTk):
 
             # Play sound every 15 minutes
             if self.elapsed_time - self.last_notification >= 900 and self.freq_sound_var.get():  # 900 seconds = 15 minutes
-                self.play_sound(get_resource_path("sounds/wow-171498.mp3"))
+                asyncio.run(self.play_sound(get_resource_path("sounds/wow-171498.mp3")))
                 self.last_notification = self.elapsed_time
 
             if self.elapsed_time >= self.focus_duration * 60:
-                self.is_focus_running = False
-                self.play_sound(get_resource_path("sounds/success-fanfare-trumpets-6185.mp3"))
-                self.log_focus_to_calendar()
-                self.update_stats()
-                self.reset_focus_timer()
-                self.start_break_timer()
+                asyncio.run(self.play_sound(get_resource_path("sounds/success-fanfare-trumpets-6185.mp3")))
+                if self.focus_session_complete():
+                    self.after(1000, self.update_timers)
+                else:
+                    self.is_focus_running = False
+                    self.log_focus_to_calendar()
+                    self.update_stats()
+                    self.reset_focus_timer()
+                    self.start_break_timer()
             else:
                 self.after(1000, self.update_timers)
         elif self.is_break_running:
