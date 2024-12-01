@@ -281,11 +281,11 @@ class FocusApp(ctk.CTk):
 
             # Play sound every 15 minutes
             if self.elapsed_time - self.last_notification >= 900 and self.freq_sound_var.get():  # 900 seconds = 15 minutes
-                asyncio.run(self.play_sound(get_resource_path("sounds/wow-171498.mp3")))
+                self.play_sound(get_resource_path("sounds/wow-171498.mp3"))
                 self.last_notification = self.elapsed_time
 
             if self.elapsed_time >= self.focus_duration * 60:
-                asyncio.run(self.play_sound(get_resource_path("sounds/success-fanfare-trumpets-6185.mp3")))
+                self.play_sound(get_resource_path("sounds/success-fanfare-trumpets-6185.mp3"))
                 if self.focus_session_complete():
                     self.after(1000, self.update_timers)
                 else:
