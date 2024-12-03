@@ -1,16 +1,17 @@
 import datetime
 import json
 import threading
-
 import tkinter as tk
 from tkinter import messagebox
+
 import customtkinter as ctk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from playsound import playsound
 
-from utils import add_focus_session_to_calendar, get_resource_path
 from consts import COLORS
+from utils import add_focus_session_to_calendar, get_resource_path
+
 
 class FocusApp(ctk.CTk):
     def __init__(self):
@@ -22,6 +23,8 @@ class FocusApp(ctk.CTk):
 
         self.is_focus_running = False
         self.is_break_running = False
+        self.start_pause_time = None
+        self.total_paused_time_in_seconds = 0
         self.is_paused = False
         self.focus_duration = 0
         self.elapsed_time = 0
@@ -43,11 +46,10 @@ class FocusApp(ctk.CTk):
                 self.save_stats()  # Save stats before closing
         else:
             destroy = True
-        
+
         if destroy:
             self.quit()
             self.destroy()
-
 
     def create_widgets(self):
         self.grid_columnconfigure(0, weight=1)
@@ -77,16 +79,18 @@ class FocusApp(ctk.CTk):
         self.task_label.grid(row=1, column=0, pady=(0, 10))
 
         self.setted_focus_time_label = ctk.CTkLabel(timer_frame, text="Setted Focus Time: 0 min",
-                                       font=ctk.CTkFont(size=16))
+                                                    font=ctk.CTkFont(size=16))
         self.setted_focus_time_label.grid(row=2, column=0, pady=(0, 10))
 
         plus_minus_frame = ctk.CTkFrame(timer_frame)
         plus_minus_frame.grid(row=3, column=0, padx=5, pady=5)
 
-        self.plus_5min_button = ctk.CTkButton(plus_minus_frame, text="+5 min", command=self.add_5_minutes, font=ctk.CTkFont(size=12),width =10)
-        self.plus_5min_button.grid(row=0, column=1, pady=(0, 10),padx=10)
-        self.minus_5min_button = ctk.CTkButton(plus_minus_frame, text="-5 min", command=self.minus_5_minutes, font=ctk.CTkFont(size=12),width =10)
-        self.minus_5min_button.grid(row=0, column=0, pady=(0, 10),padx=10)
+        self.plus_5min_button = ctk.CTkButton(plus_minus_frame, text="+5 min", command=self.add_5_minutes,
+                                              font=ctk.CTkFont(size=12), width=10)
+        self.plus_5min_button.grid(row=0, column=1, pady=(0, 10), padx=10)
+        self.minus_5min_button = ctk.CTkButton(plus_minus_frame, text="-5 min", command=self.minus_5_minutes,
+                                               font=ctk.CTkFont(size=12), width=10)
+        self.minus_5min_button.grid(row=0, column=0, pady=(0, 10), padx=10)
 
         # Input Frame
         input_frame = ctk.CTkFrame(main_frame)
@@ -149,9 +153,10 @@ class FocusApp(ctk.CTk):
         self.reset_stats_button.grid(row=0, column=0, padx=5)
 
         self.freq_sound_var = tk.BooleanVar(value=True)
-        self.freq_sound_toggle = ctk.CTkSwitch(options_frame, text="Enable Frequent Sounds", variable=self.freq_sound_var)
+        self.freq_sound_toggle = ctk.CTkSwitch(options_frame, text="Enable Frequent Sounds",
+                                               variable=self.freq_sound_var)
         self.freq_sound_toggle.grid(row=0, column=2, padx=5)
-        
+
         self.sound_var = tk.BooleanVar(value=True)
         self.sound_toggle = ctk.CTkSwitch(options_frame, text="Enable Sounds", variable=self.sound_var)
         self.sound_toggle.grid(row=0, column=1, padx=5)
@@ -184,7 +189,7 @@ class FocusApp(ctk.CTk):
         )
 
         self.color_dropdown.grid(row=3, column=1, pady=(0, 10), sticky="ew")
-        
+
     def add_5_minutes(self, force=False):
         if self.focus_duration == 0 and not force:
             messagebox.showwarning("Warning", "Please Start a session first.")
@@ -226,12 +231,17 @@ class FocusApp(ctk.CTk):
     def pause_focus_session(self):
         if self.is_focus_running:
             if self.is_paused:
+                if self.start_pause_time is None:
+                    self.start_pause_time = datetime.datetime.utcnow()
+                self.total_paused_time_in_seconds += int((
+                            datetime.datetime.utcnow() - self.start_pause_time).total_seconds())
                 self.is_paused = False
                 self.pause_button.configure(text="Pause")
+                self.start_pause_time = None
             else:
+                self.start_pause_time = datetime.datetime.utcnow()
                 self.is_paused = True
                 self.pause_button.configure(text="Resume")
-
 
     def update_focus_timer(self):
         text = self.format_time(self.elapsed_time)
@@ -244,6 +254,8 @@ class FocusApp(ctk.CTk):
             self.log_focus_to_calendar()
             self.reset_focus_timer()
             self.start_break_timer()
+            self.total_paused_time_in_seconds = 0
+            self.start_pause_time = None
 
     def reset_focus_timer(self):
         self.elapsed_time = 0
@@ -258,11 +270,13 @@ class FocusApp(ctk.CTk):
         if self.start_time:
             elapsed_minutes = self.elapsed_time // 60
             cc_email = self.cc_email_entry.get()
-            add_focus_session_to_calendar(self.start_time, elapsed_minutes, self.task, cc_email if cc_email else None, self.selected_color_id)
+            add_focus_session_to_calendar(self.start_time, elapsed_minutes, self.task, cc_email if cc_email else None,
+                                          self.selected_color_id)
 
-    def focus_session_complete(self):
+    def ask_add_more_time_on_complete(self):
         # Ask the user whether to add 5 more minutes
-        add_more_time = messagebox.askyesno("Add More Time", "Focus Session Complete! Would you like to add 5 more minutes?")
+        add_more_time = messagebox.askyesno("Add More Time",
+                                            "Focus Session Complete! Would you like to add 5 more minutes?")
         if add_more_time:
             self.add_5_minutes(force=True)
         return add_more_time
@@ -271,22 +285,22 @@ class FocusApp(ctk.CTk):
         self.start_time = datetime.datetime.utcnow()
         self.last_notification = 0
         self.update_timers()
-    
-    
+
     def update_timers(self):
         if self.is_focus_running and not self.is_paused:
             current_time = datetime.datetime.utcnow()
-            self.elapsed_time = int((current_time - self.start_time).total_seconds())
+            self.elapsed_time = int(
+                (current_time - self.start_time).total_seconds()) - self.total_paused_time_in_seconds
             self.update_focus_timer()
 
             # Play sound every 15 minutes
             if self.elapsed_time - self.last_notification >= 900 and self.freq_sound_var.get():  # 900 seconds = 15 minutes
-                asyncio.run(self.play_sound(get_resource_path("sounds/wow-171498.mp3")))
+                self.play_sound(get_resource_path("sounds/wow-171498.mp3"))
                 self.last_notification = self.elapsed_time
 
             if self.elapsed_time >= self.focus_duration * 60:
-                asyncio.run(self.play_sound(get_resource_path("sounds/success-fanfare-trumpets-6185.mp3")))
-                if self.focus_session_complete():
+                self.play_sound(get_resource_path("sounds/success-fanfare-trumpets-6185.mp3"))
+                if self.ask_add_more_time_on_complete():
                     self.after(1000, self.update_timers)
                 else:
                     self.is_focus_running = False
@@ -296,6 +310,8 @@ class FocusApp(ctk.CTk):
                     self.start_break_timer()
             else:
                 self.after(1000, self.update_timers)
+        elif self.is_focus_running and self.is_paused:
+            self.after(1000, self.update_timers)
         elif self.is_break_running:
             text = self.format_time(int((datetime.datetime.utcnow() - self.start_time).total_seconds()))
             self.break_timer_label.configure(text=f"Break Timer: {text}")
@@ -309,7 +325,6 @@ class FocusApp(ctk.CTk):
         self.is_break_running = True
         self.break_timer_label.configure(text="Break Timer: 00:00")
         self.update_timers()
-
 
     def update_stats(self):
         self.total_focus_time += self.elapsed_time
@@ -382,7 +397,7 @@ class FocusApp(ctk.CTk):
         dates = [date.split("-")[1] + "-" + date.split("-")[2] for date in dates]
         if len(times) == 0:
             average_time = 0
-        else:   
+        else:
             average_time = sum(times) / len(times)
 
         self.ax.bar(dates, times, color='skyblue')
@@ -392,7 +407,7 @@ class FocusApp(ctk.CTk):
         self.ax.set_title('Daily Focus Time (Last 7 Days)')
         self.ax.tick_params(axis='x')
         max_time = max(times) if times else 1
-        self.ax.set_yticks([i for i in range(0, int(max_time)+1)])  # Set y-ticks to be every hour
+        self.ax.set_yticks([i for i in range(0, int(max_time) + 1)])  # Set y-ticks to be every hour
         self.fig.tight_layout()
         self.canvas.draw()
 
@@ -401,7 +416,8 @@ class FocusApp(ctk.CTk):
         self.selected_color_id = int(self.color_var.get().split(':')[0])
         color_info = COLORS[self.selected_color_id]
         self.color_dropdown.configure(fg_color=color_info["background"],
-                                      button_color = color_info["background"],)  # Update background color
+                                      button_color=color_info["background"], )  # Update background color
+
 
 if __name__ == "__main__":
     app = FocusApp()
